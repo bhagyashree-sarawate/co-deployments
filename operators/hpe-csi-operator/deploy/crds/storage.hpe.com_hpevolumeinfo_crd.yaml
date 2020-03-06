@@ -18,7 +18,7 @@ spec:
           items:
             properties:
               uuid:
-                description: The UUID of the node.
+                description: The UUID of the volume
                 type: string
           
               record:

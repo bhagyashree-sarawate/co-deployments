@@ -21,13 +21,12 @@ spec:
   secret:
     # parameters for hpe3parprimera
     create: true
-    backend: 15.212.x.x
+    backend: 192.168.x.x
     username: 3parxxx
     password: 3parxxx
     servicePort: "10000"
     serviceName: hpe3parprimera-csp-svc
     name: hpe3parprimera-secret
-
 
   # flavor
   flavor: kubernetes
@@ -35,7 +34,7 @@ spec:
   # log level for all csi driver components
   logLevel: trace
 
-  ## For creating the StorageClass automatically:
+   ## For creating the StorageClass automatically:
   storageClass:
     create: false
 
@@ -43,4 +42,22 @@ spec:
     ## Ignored if storageClass.create is false
     defaultClass: false
 
+    ## Set a StorageClass name
+    ## Ignored if storageClass.create is false
+    name: hpe-standard
+    # Enable volume resize
+    ## Ignored if storageClass.create is false
+    allowVolumeExpansion: false
+    # Default storage class parameters
+    parameters:
+      fsType: ext4
+      volumeDescription: "Volume created by the HPE CSI Driver for Kubernetes"
+      accessProtocol: "iscsi"
+
+  # CRD creation controls
+  crd:
+    nodeInfo:
+      ## For helm v3+ CRD's are handled automatically without this flag.
+      ## This flag should be enabled for helm v2+
+      create: false
 
