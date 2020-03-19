@@ -5,11 +5,11 @@ The [HPE CSI Driver for Kubernetes](https://github.com/hpe-storage/csi-driver) l
 ## Prerequisites
 
 - Upstream Kubernetes version > 1.13
-- Other Kubernetes distributions supported
-- OpenShift 4.2 in Tech Preview (3.x is not supported, see [FlexVolume Driver Helm chart](https://github.com/hpe-storage/co-deployments/tree/master/helm/charts/hpe-flexvolume-driver))
-- More distributions will be listed as tests are ongoing
+- Most Kubernetes distributions supported
+- OpenShift 4.2, 4.3 (RHCOS and RHEL 7.x)
 - Recent Ubuntu, CentOS or RHEL compute nodes connected to their respective official package repositories
-- Helm 3.x is not supported with v1.0.0 release.
+- Helm 2 (Should specify creation of CRD's explicitly using `--set crd.nodeInfo.create=true` during install)
+- Helm 3 (Supported only from HPE CSI Driver version 1.1.0 onwards)
 
 Depending on which [Container Storage Provider](https://github.com/hpe-storage/container-storage-provider) (CSP) is being used, other prerequisites and requirements may apply.
 
@@ -43,25 +43,56 @@ It's recommended to create a [values.yaml](https://github.com/hpe-storage/co-dep
 ### Installing the Chart
 To install the chart with the name `hpe-csi`:
 
+Add HPE helm repo:
 ```
 helm repo add hpe https://hpe-storage.github.io/co-deployments
-helm install --name hpe-csi hpe/hpe-csi-driver --namespace kube-system -f myvalues.yaml
+helm repo update
+helm search repo hpe-csi-driver
 ```
 
-**Note:** Omitting the `--name` flag will generate a human readable name.
+Install the latest chart:
+```
+# Helm 3
+helm install hpe-csi hpe/hpe-csi-driver --namespace kube-system -f myvalues.yaml
+
+# Helm 2
+# Install with HPENodeInfos CRD's enabled explicitly
+helm install --name hpe-csi hpe/hpe-csi-driver --namespace kube-system -f myvalues.yaml --set crd.nodeInfo.create=true
+```
+
+### Upgrading the Chart
+To upgrade the chart, specify the version you want to upgrade to as below. Please do NOT re-use the values.yaml from 1.0.0 version to upgrade to later versions. Always use values.yaml from corresponding release from [values.yaml](https://github.com/hpe-storage/co-deployments/blob/master/helm/values/csi-driver)
+
+```
+# List the avaiable version of the plugin:
+helm repo update
+helm search repo hpe-csi-driver -l
+
+# Select the target version to upgrade as below:
+helm upgrade hpe-csi hpe/hpe-csi-driver --namespace kube-system --version=x.x.x.x -f myvalues.yaml
+```
 
 ### Uninstalling the Chart
-To uninstall/delete the `hpe-csi` deployment:
+To uninstall/delete the `hpe-csi` chart:
 
 ```
+# Helm 3
+helm uninstall hpe-csi --namespace kube-system
+
+# Helm 2
 helm delete hpe-csi --purge
 ```
 
 ### Alternative install method
-In some cases it's more practical to provide the local configuration via the `helm` command directly. Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
+In some cases it's more practical to provide the local configuration via the `helm` command directly. Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. These will take precedence over entries in [values.yaml](https://github.com/hpe-storage/co-deployments/blob/master/helm/values/csi-driver/v1.1.0/values.yaml). For example:
 
 ```
-helm install --name hpe-csi hpe/hpe-csi-driver \
+# Helm 3
+helm install hpe-csi hpe/hpe-csi-driver --namespace kube-system \
+--set backend=X.X.X.X --set username=admin --set password=xxxxxxxxx
+
+# Helm 2
+helm install --name hpe-csi hpe/hpe-csi-driver --namespace kube-system \
 --set backend=X.X.X.X --set username=admin --set password=xxxxxxxxx
 ```
 
