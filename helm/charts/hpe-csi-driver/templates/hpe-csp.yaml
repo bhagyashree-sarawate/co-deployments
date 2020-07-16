@@ -38,7 +38,7 @@ spec:
       containers:
         - name: {{ .Values.backendType }}-csp
           {{- if eq .Values.backendType "primera3par" }}
-          image: hpestorage/hpe3parprimera-csp:v1.0.1
+          image:  {{ .Values.images.cspImage}}
           {{- else }}
           image: hpestorage/nimble-csp:v1.2.0
           {{- end }}

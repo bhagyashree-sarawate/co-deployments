@@ -9,7 +9,7 @@ sources:
 - https://scod.hpedev.io/csi_driver
 name: hpe-csi-driver
 home: https://hpe.com/storage/containers
-version: 1.2.1
+version: 1.2.1-dev
 keywords:
   - HPE
   - Storage
