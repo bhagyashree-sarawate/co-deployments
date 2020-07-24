@@ -35,6 +35,17 @@ spec:
         spec:
           description: HPECSIDriverSpec defines the desired state of HPECSIDriver
           properties:
+            images:
+              description: HPE CSI driver images
+              properties:
+                csiDriverImage:
+                  type: string
+                cspImage:
+                  type: string
+              required:
+              - csiDriverImage
+              - cspImage
+              type: object            
             backendType:
               description: HPE storage backend type (nimble, primera3par) for the CSP deployment
               type: string
