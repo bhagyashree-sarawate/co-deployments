@@ -1,0 +1,68 @@
+# Configuration to deploy the VolumeGroup Controller and the HPE CSI Extensions driver
+
+
+###########################################################
+############  HPE CSI VolumeGroup Controller ############
+###########################################################
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: hpe-csi-volumegroup-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hpe-csi-volumegroup-controller
+  template:
+    metadata:
+      labels:
+        app: hpe-csi-volumegroup-controller
+        role: hpe-csi
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccount: hpe-csi-volumegroup-controller-sa
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      containers:
+        - name: csi-volume-group-provisioner
+          #image: pavansshanbhag/volume-group-provisioner:edge
+          image: quay.io/hpestorage/volume-group-provisioner:v1.0.0-beta
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /var/lib/csi/sockets/pluginproxy/csi-extensions.sock
+          imagePullPolicy: "Always"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/csi/sockets/pluginproxy/
+        - name: csi-extensions
+          image: quay.io/hpestorage/csi-extensions:v1.2.0-beta
+          #image: hpestorage/csi-extensions:edge
+          #image: bhasa/csi-extensions:edge
+          args:
+            - "--v=5"
+            - "--endpoint=$(CSI_ENDPOINT)"
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///var/lib/csi/sockets/pluginproxy/csi-extensions.sock
+            - name: LOG_LEVEL
+              value: trace
+          imagePullPolicy: "Always"
+          #imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/csi/sockets/pluginproxy/
+      volumes:
+        - name: socket-dir
+          emptyDir: {}
+        - name: log-dir
+          hostPath:
+            path: /var/log

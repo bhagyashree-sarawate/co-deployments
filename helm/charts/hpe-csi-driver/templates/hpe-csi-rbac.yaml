@@ -318,6 +318,9 @@ subjects:
   - kind: ServiceAccount
     name: hpe-csi-controller-sa
     namespace: kube-system
+  - kind: ServiceAccount
+    name: hpe-csi-volumegroup-controller-sa
+    namespace: kube-system
 roleRef:
   kind: ClusterRole
   name: hpe-csi-volumegroup-role
@@ -404,6 +407,9 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: hpe-csi-controller-sa
+    namespace: kube-system
+  - kind: ServiceAccount
+    name: hpe-csi-snapshotgroup-controller-sa
     namespace: kube-system
 roleRef:
   kind: ClusterRole
@@ -518,6 +524,12 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.hpe.com"]
+    resources: ["hpevolumegroupinfos"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["storage.hpe.com"]
+    resources: ["hpesnapshotgroupinfos"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
 ---
 
@@ -555,4 +567,20 @@ kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: hpe-csp-sa
+  namespace: {{ .Release.Namespace }}
+
+---
+
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: hpe-csi-volumegroup-controller-sa
+  namespace: {{ .Release.Namespace }}
+
+---
+
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: hpe-csi-snapshotgroup-controller-sa
   namespace: {{ .Release.Namespace }}
