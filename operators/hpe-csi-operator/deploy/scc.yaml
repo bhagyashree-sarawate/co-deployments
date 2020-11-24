@@ -31,5 +31,7 @@ users:
 - system:serviceaccount:my-hpe-csi-driver-operator:hpe-csp-sa
 - system:serviceaccount:my-hpe-csi-driver-operator:hpe-csi-operator-sa
 - system:serviceaccount:hpe-nfs:hpe-csi-nfs-sa
+- system:serviceaccount:my-hpe-csi-driver-operator:hpe-csi-volumegroup-controller-sa
+- system:serviceaccount:my-hpe-csi-driver-operator:hpe-csi-snapshotgroup-controller-sa
 volumes:
 - '*'
